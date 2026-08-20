@@ -1,3 +1,4 @@
+/* Theme cycling — palettes and switching logic from script-参考.js */
 (function () {
   try {
     var P = [
@@ -37,7 +38,7 @@
   } catch (e) {}
 })();
 
-
+/* Minimal self-contained Markdown renderer (no external dependencies) */
 (function () {
   function esc(s) {
     return String(s)
@@ -180,9 +181,16 @@
   var outputBack = document.getElementById('output-back');
   var outputMq = window.matchMedia('(max-aspect-ratio: 3/4)');
   var outputOpen = false;
-  // AI 接口：你的 Cloudflare Worker（API Key 由 Worker 的 Secret 持有）
-  var API_ENDPOINT = 'https://cosmic-overanalysis-proxy.liujiyuan666.workers.dev/';
-  // 可选：与 Worker 的 API_TOKEN 保持一致（防止陌生人直接调用）；留空则不发送
+  // AI 接口：按顺序尝试，第一个失败会自动回落到下一个
+  // 1) 腾讯云 SCF 函数 URL（国内直连，推荐主用）——部署后把地址换成你的函数 URL
+  //    格式：https://<app-id>-<url-id>.<region>.tencentscf.com
+  // 2) Cloudflare Worker（备用，境外访问不稳但作为兜底）
+  var API_ENDPOINTS = [
+    'https://1386465714-ik0vyyp4l6.ap-beijing.tencentscf.com',
+    'https://cosmic-overanalysis-proxy.liujiyuan666.workers.dev/'
+  ];
+  var API_TIMEOUT = 60000; // 单个后端请求超时（毫秒）
+  // 可选：与后端的 API_TOKEN 保持一致（防止陌生人直接调用）；留空则不发送
   var API_TOKEN = '';
   var sending = false;
   if (!input || !placeholder || !btnSend) return;
@@ -223,36 +231,55 @@
 
   function askAI(message) {
     var headers = { 'Content-Type': 'application/json' };
-    // 提示词已内嵌在 Worker 
+    // 提示词已内嵌在后端（SCF / Worker）的 DEFAULT_PROMPT 里，前端不需要再传
     var body = { message: message };
     if (API_TOKEN) {
       headers['X-Api-Token'] = API_TOKEN;
       body.token = API_TOKEN;
     }
-    return fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(body)
-    }).then(function (resp) {
-      return resp.text().then(function (raw) {
-        var data = null;
-        try { data = JSON.parse(raw); } catch (e) { data = null; }
-        if (!resp.ok) {
-          var err = new Error((data && data.error) || ('API 请求失败: ' + resp.status));
-          if (resp.status === 429) err.rateLimited = true;
-          throw err;
-        }
-        if (!data) {
-          var msg = raw.trim();
-          throw new Error(msg ? ('接口返回非 JSON：' + msg.slice(0, 120)) : '接口返回为空');
-        }
-        var reply = data.reply;
-        if (typeof reply !== 'string' || !reply.trim()) {
-          throw new Error('API 返回缺少 reply 字段');
-        }
-        return reply;
+    var payload = JSON.stringify(body);
+
+    function post(endpoint) {
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function () { controller.abort(); }, API_TIMEOUT) : null;
+      var opts = {
+        method: 'POST',
+        headers: headers,
+        body: payload
+      };
+      if (controller) opts.signal = controller.signal;
+      return fetch(endpoint, opts).then(function (resp) {
+        if (timer) clearTimeout(timer);
+        return resp.text().then(function (raw) {
+          var data = null;
+          try { data = JSON.parse(raw); } catch (e) { data = null; }
+          if (!resp.ok) {
+            var err = new Error((data && data.error) || ('API 请求失败: ' + resp.status));
+            if (resp.status === 429) err.rateLimited = true;
+            throw err;
+          }
+          if (!data) {
+            var msg = raw.trim();
+            throw new Error(msg ? ('接口返回非 JSON：' + msg.slice(0, 120)) : '接口返回为空');
+          }
+          var reply = data.reply;
+          if (typeof reply !== 'string' || !reply.trim()) {
+            throw new Error('API 返回缺少 reply 字段');
+          }
+          return reply;
+        });
+      }).catch(function (e) {
+        if (timer) clearTimeout(timer);
+        throw e;
       });
+    }
+
+    // 依次尝试每个后端，全部失败时把最后一个错误抛给调用方
+    var pending = Promise.reject(new Error('无可用后端'));
+    API_ENDPOINTS.forEach(function (endpoint) {
+      pending = pending.catch(function () { return post(endpoint); });
     });
+    return pending;
   }
 
   function closeOutput() {
