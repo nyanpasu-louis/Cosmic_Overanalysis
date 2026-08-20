@@ -186,7 +186,7 @@
   //    格式：https://<app-id>-<url-id>.<region>.tencentscf.com
   // 2) Cloudflare Worker（备用，境外访问不稳但作为兜底）
   var API_ENDPOINTS = [
-    'https://1386465714-ik0vyyp4l6.ap-beijing.tencentscf.com'
+    'https://1386465714-fp8grqdrpy.ap-beijing.tencentscf.com'
   ];
   var API_TIMEOUT = 120000; // 单个后端请求超时（毫秒）
   // 可选：与后端的 API_TOKEN 保持一致（防止陌生人直接调用）；留空则不发送
