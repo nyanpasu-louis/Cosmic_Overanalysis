@@ -1,4 +1,3 @@
-/* Theme cycling — palettes and switching logic from script-参考.js */
 (function () {
   try {
     var P = [
@@ -38,7 +37,7 @@
   } catch (e) {}
 })();
 
-/* Minimal self-contained Markdown renderer (no external dependencies) */
+
 (function () {
   function esc(s) {
     return String(s)
@@ -224,7 +223,7 @@
 
   function askAI(message) {
     var headers = { 'Content-Type': 'application/json' };
-    // 提示词已内嵌在 Worker 的 DEFAULT_PROMPT 里，前端不需要再传
+    // 提示词已内嵌在 Worker 
     var body = { message: message };
     if (API_TOKEN) {
       headers['X-Api-Token'] = API_TOKEN;
