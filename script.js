@@ -208,7 +208,7 @@
 
   function openOutput() {
     outputOpen = true;
-    setOutputText('正在认真解读，请等待10-20s喵…');
+    setOutputText('正在认真解读，请等待10-30s喵…');
     if (outputPanel) outputPanel.setAttribute('aria-hidden', 'false');
     syncOutputMode();
   }
