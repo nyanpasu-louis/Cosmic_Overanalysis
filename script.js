@@ -189,7 +189,7 @@
     'https://1386465714-ik0vyyp4l6.ap-beijing.tencentscf.com',
     'https://cosmic-overanalysis-proxy.liujiyuan666.workers.dev/'
   ];
-  var API_TIMEOUT = 60000; // 单个后端请求超时（毫秒）
+  var API_TIMEOUT = 120000; // 单个后端请求超时（毫秒）
   // 可选：与后端的 API_TOKEN 保持一致（防止陌生人直接调用）；留空则不发送
   var API_TOKEN = '';
   var sending = false;
