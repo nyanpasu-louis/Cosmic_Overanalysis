@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>容我多想 · Cosmic Overanalysis</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1 class="title">容我多想</h1>
+    <p class="subtitle">Cosmic Overanalysis</p>
+  </header>
+
+  <section class="composer" aria-label="输入区">
+    <div class="input-wrap">
+      <textarea id="main-input" class="big-input" rows="7" spellcheck="false" maxlength="4000" aria-label="请输入文本"></textarea>
+      <div class="input-placeholder" id="input-placeholder">
+        <span class="ph-main">请输入文本</span>
+        <span class="ph-hint">一切文字 随便什么神圣或雷霆内容都行</span>
+        <span class="ph-hint">无论你输入什么 我都会尽我全力认真解读喵</span>
+      </div>
+    </div>
+    <div class="composer-foot">
+      <span class="composer-hint">Enter 发送 · Ctrl/Cmd + Enter 换行</span>
+      <div class="composer-actions">
+        <button class="btn-send" id="btn-history" title="对话历史" aria-label="对话历史">历史</button>
+        <button class="btn-send" id="btn-send" disabled title="发送" aria-label="发送">发送</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="output-panel" id="output-panel" aria-hidden="true">
+    <button class="output-back" id="output-back" aria-label="返回">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18L9 12L15 6" />
+      </svg>
+    </button>
+    <div class="output-header">解读结果</div>
+    <div class="output-body" id="output-body"></div>
+    <div class="output-foot">
+      <div class="download-menu" id="download-menu" hidden>
+        <button type="button" data-format="txt">TXT</button>
+        <button type="button" data-format="md">MD</button>
+        <button type="button" data-format="docx">DOCX</button>
+      </div>
+      <button class="btn-download" id="btn-download" title="下载输出结果" aria-label="下载输出结果">下载</button>
+    </div>
+  </section>
+
+  <section class="history-panel" id="history-panel" aria-hidden="true">
+    <div class="history-topbar">
+      <button class="history-back" id="history-back" aria-label="返回">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18L9 12L15 6" />
+        </svg>
+      </button>
+      <span class="history-header">对话历史</span>
+      <button class="history-clear" id="history-clear">清空历史</button>
+    </div>
+    <div class="history-list" id="history-list"></div>
+    <div class="history-empty" id="history-empty">暂无对话记录</div>
+  </section>
+
+  <section class="history-detail" id="history-detail" aria-hidden="true">
+    <div class="history-topbar">
+      <button class="history-back" id="detail-back" aria-label="返回">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18L9 12L15 6" />
+        </svg>
+      </button>
+      <span class="history-header">对话详情</span>
+      <span class="history-topbar-spacer"></span>
+    </div>
+    <div class="history-detail-body" id="history-detail-body"></div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
